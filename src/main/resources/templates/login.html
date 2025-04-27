@@ -282,8 +282,9 @@
             },
             success: function (data) {
                 if (data.code == 200) {
-                    alert(data.message)
+                    // alert(data.message)
                     //如果code是200,说明登录成功., 就直接进入到商品列表页
+                    layer.msg("登录成功~~");
                     window.location.href = "/goods/toList"
                 } else {
                     alert(data.message)

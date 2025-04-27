@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rainbowsea.seckill.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.rainbowsea.seckill.pojo.Order">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="goodsId" column="goods_id" jdbcType="BIGINT"/>
+        <result property="deliveryAddrId" column="delivery_addr_id" jdbcType="BIGINT"/>
+        <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+        <result property="goodsCount" column="goods_count" jdbcType="INTEGER"/>
+        <result property="goodsPrice" column="goods_price" jdbcType="DECIMAL"/>
+        <result property="orderChannel" column="order_channel" jdbcType="TINYINT"/>
+        <result property="status" column="status" jdbcType="TINYINT"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="payDate" column="pay_date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,goods_id,
+        delivery_addr_id,goods_name,goods_count,
+        goods_price,order_channel,status,
+        create_date,pay_date
+    </sql>
+</mapper>

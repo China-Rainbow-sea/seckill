@@ -27,7 +27,7 @@ spring:
       connection-test-query: select 1
     #  配置Redis
   redis:
-    host: 192.168.76.166
+    host: 192.168.76.168
     port: 6379
     password: rainbowsea
     database: 0

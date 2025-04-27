@@ -68,8 +68,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="seckill_user" />
-                  <option name="tableName" value="seckill_user" />
+                  <option name="className" value="Order" />
+                  <option name="tableName" value="t_order" />
                 </TableUIInfo>
               </list>
             </option>

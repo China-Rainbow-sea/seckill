@@ -35,6 +35,8 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         //获取参数是不是user类型
         Class<?> aClass = parameter.getParameterType();
         //如果为t, 就执行resolveArgument
+
+        // 如果其他的 对象类，可以使用 if 语句进行一个判断
         return aClass == User.class;
     }
 

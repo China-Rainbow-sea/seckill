@@ -1,18 +1,15 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>商品列表</title>
+    <title>订单详情</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!--jquery-->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
     <!-- bootstrap -->
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
-    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
-    <!-- jquery-validator -->
-    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
-    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.js}"></script>
     <!-- layer -->
     <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
-    <!-- md5.js -->
-    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
     <!-- common.js -->
     <script type="text/javascript" th:src="@{/js/common.js}"></script>
     <style>
@@ -64,29 +61,23 @@
 
         .container {
             background: #FFFFFF;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+            width: 750px;
         }
 
-        .add-good {
-            padding-top: 12px;
-            padding-bottom: 20px;
-            border-radius: 10px;
-            outline: none;
-            display: block;
-            margin-right: 30px;
-            background: #f6f6f6;
-            color: #ce7d88;
-            border: solid 1px #eac7cc;
-        }
     </style>
 </head>
+
 <body>
 
-
-<!--抽取头部公共页面-->
 <header id="site-header" class="main-header">
     <!-- Logo -->
-    <a class="logo" th:href="@{/goods/toList}">
-        <span class="logo-lg"><b>商品抢购</b></span></a>
+    <a class="logo" onclick="toList()">
+        <span class="logo-lg"><b>商品抢购</b></span>
+    </a>
 
     <nav class="navbar navbar-static-top">
         <!-- Sidebar toggle button-->
@@ -102,7 +93,7 @@
 
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img class="user-image" src="/imgs/user.png" height="42" alt="User Image">
+                        <img class="user-image" src="/imgs/user.png" height="32" alt="User Image">
                         <span class="hidden-xs"></span>
                     </a>
                     <ul class="dropdown-menu">
@@ -119,7 +110,7 @@
                         </li>
                         <li class="user-footer">
                             <div class="pull-middle">
-                                <a th:href="@{/login/out}" class="btn btn-lg btn-default btn-block">退出系统</a>
+                                <a onclick="toList()" class="btn btn-lg btn-default btn-block">退出系统</a>
                             </div>
                         </li>
                     </ul>
@@ -129,28 +120,57 @@
     </nav>
 </header>
 
-<div class="container">
-    <div class="panel-heading">秒杀商品列表</div>
+<div class="panel panel-default">
+    <div class="panel-heading" style="background: #c9302c;color: white">秒杀订单详情</div>
+    <div class="container">
+        <table class="table" id="order">
+            <tr>
+                <td>名称</td>
+                <td id="goodName" colspan="3" th:text="${goods.goodsName}"></td>
+            </tr>
+            <tr>
+                <td>图片</td>
+                <td colspan="2"><img id="goodImg" width="200" th:src="@{${goods.goodsImg}}"
+                                     height="200"/></td>
+            </tr>
+            <tr>
+                <td>订单价格</td>
+                <td colspan="2" id="goodPrice" th:text="${order.goodsPrice}"></td>
+            </tr>
+            <tr>
+                <td>下单时间</td>
+                <td id="createDate" colspan="2" th:text="${#dates.format(order.createDate,'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+            <tr>
+                <td>订单状态</td>
+                <td id="status" >
+                    <span th:if="${order.status eq 0}">未支付</span>
+                    <span th:if="${order.status eq 1}">代发货</span>
+                    <span th:if="${order.status eq 2}">已发货</span>
+                    <span th:if="${order.status eq 3}">已收货</span>
+                    <span th:if="${order.status eq 4}">已退款</span>
+                    <span th:if="${order.status eq 5}">已完成</span>
 
-    <table class="table" id="goodslist">
-        <tr>
-            <td>名称</td>
-            <td>图片</td>
-            <td>原价</td>
-            <td>秒杀价</td>
-            <td>库存</td>
-            <td>详情</td>
-        </tr>
-        <tr th:each="goods,goodstStat : ${goodsList}">
-<!--            <td th:text="${goods.goodsName}"></td>-->
-<!--            <td><img th:src="@{${goods.goodsImg}}" width="100" height="100"/>-->
-            </td>
-<!--            <td th:text="${goods.goodsPrice}"></td>-->
-            <td th:text="${goods.seckillPrice}"></td>
-            <td th:text="${goods.stockCount}"></td>
-            <td><a th:href="'/goods/toDetail/'+${goods.id}">查看详情</a></td>
-        </tr>
-    </table>
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-block" type="submit"
+                            id="payButton">立即支付
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>收货人</td>
+                <td colspan="2">XXX 13300000000</td>
+            </tr>
+            <tr>
+                <td>收货地址</td>
+                <td colspan="2">北京市幸福小区6单元101号</td>
+            </tr>
+        </table>
+    </div>
 </div>
+
 <script>
 </script>
+</body>
+</html>
