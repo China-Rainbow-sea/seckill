@@ -39,4 +39,16 @@ public interface UserService extends IService<User> {
                                 HttpServletRequest request,
                                 HttpServletResponse response);
 
+
+    /**
+     * 更改密码 ，更新 Redis 当中的用户缓存信息。
+     * @param userTicket
+     * @param password
+     * @param request
+     * @param response
+     * @return
+     */
+    RespBean updatePassword
+            (String userTicket, String password,
+             HttpServletRequest request, HttpServletResponse response);
 }

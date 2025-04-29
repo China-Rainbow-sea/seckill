@@ -86,18 +86,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         redisTemplate.opsForValue().set("user:" + ticket, user);
 
 
-
         // 将登录成功的用户保存到 session
         //request.getSession().setAttribute(ticket, user);
 
         // 将 ticket 保存到 cookie,cookieName 不可以随便写，必须时 "userTicket"
         CookieUtil.setCookie(request, response, "userTicket", ticket);
-        return RespBean.success();
+
+        //返回 ticket,否则生成多用户脚本时, userTicket 是 null
+        return RespBean.success(ticket);
     }
 
     /**
      * 根据 Cookie 当中的 userTicket 获取判断，存储到 Redis 当中的用户信息
-     * @param userTicket  Cookie 当中的 userTicket
+     *
+     * @param userTicket Cookie 当中的 userTicket
      * @param request
      * @param response
      * @return 存储到 Redis 当中的 User 对象信息
@@ -105,7 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getUserByCookieByRedis(String userTicket, HttpServletRequest request, HttpServletResponse response) {
 
-        if(!StringUtils.hasText(userTicket)) {
+        if (!StringUtils.hasText(userTicket)) {
             return null;
         }
 
@@ -114,13 +116,51 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = (User) redisTemplate.opsForValue().get("user:" + userTicket);
 
         // 如果用户不为 null，就重新设置 cookie,刷新，防止cookie超时了，
-        if(user != null) {
+        if (user != null) {
             // cookieName 不可以随便写，必须是 "userTicket"
-            CookieUtil.setCookie(request,response,"userTicket",userTicket);
+            CookieUtil.setCookie(request, response, "userTicket", userTicket);
         }
 
         return user;
     }
+
+
+    /**
+     * 更改用户密码，同时立马更新缓存到 Redis 当中的信息
+     * @param userTicket
+     * @param password
+     * @param request
+     * @param response
+     * @return
+     */
+    @Override
+    public RespBean updatePassword(String userTicket,
+                                   String password,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
+
+        // 更新用户密码,同时删除用户在 Redis的缓存对象
+        User user = this.getUserByCookieByRedis(userTicket,request,response);
+
+        if(user == null) {
+            // 抛出异常
+            throw new GlobalException(RespBeanEnum.MOBILE_NOT_EXIST);
+        }
+
+        // 设置新密码
+        user.setPassword(MD5Util.inputPassToDBPass(password,user.getSlat()));
+
+        int i = userMapper.updateById(user);
+        if(i == 1) {  // 更新成功
+            redisTemplate.delete("user:"+userTicket);
+            return RespBean.success();
+        }
+
+
+        return RespBean.error(RespBeanEnum.PASSWROD_UPDATE_FAIL);
+    }
+
+
 }
 
 

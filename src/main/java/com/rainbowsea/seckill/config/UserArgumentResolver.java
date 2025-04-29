@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    //装配UserService
+    //装配 UserService
     @Resource
     private UserService userService;
 
@@ -40,7 +40,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         return aClass == User.class;
     }
 
-    //如果上面supportsParameter,返回T,就执行下面的resolveArgument方法
+    //如果上面supportsParameter,返回 T,就执行下面的resolveArgument方法
     //到底怎么解析，是由程序员根据业务来编写
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {

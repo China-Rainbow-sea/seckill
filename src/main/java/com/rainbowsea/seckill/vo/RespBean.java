@@ -18,7 +18,7 @@ public class RespBean {
 
     private String message;
 
-    private Object data;
+    private Object obj;
 
 
     /**
