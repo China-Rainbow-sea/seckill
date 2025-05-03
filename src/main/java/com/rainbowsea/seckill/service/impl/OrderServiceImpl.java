@@ -12,12 +12,16 @@ import com.rainbowsea.seckill.pojo.User;
 import com.rainbowsea.seckill.service.OrderService;
 import com.rainbowsea.seckill.service.SeckillGoodsService;
 import com.rainbowsea.seckill.service.SeckillOrderService;
+import com.rainbowsea.seckill.utill.MD5Util;
+import com.rainbowsea.seckill.utill.UUIDUtil;
 import com.rainbowsea.seckill.vo.GoodsVo;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author huo
@@ -119,7 +123,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
                 .eq("goods_id", goodsVo.getId())
                 .gt("stock_count", 0));  // gt  表示大于
 
-        if(!update) {  // 如果更新失败，说明已经没有库存了
+        if (!update) {  // 如果更新失败，说明已经没有库存了
             return null;
         }
 
@@ -146,11 +150,77 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         // 将生成的秒杀订单,存入到 Redis,这样在查询某个用户是否已经秒杀了这个商品时
         // 直接到 Redis 中查询，起到优化效果
         // key表示:order:userId:goodsId  Value表示订单 seckillOrder
-        redisTemplate.opsForValue().set("order:"+user.getId()+":" +
-                goodsVo.getId(),
+        redisTemplate.opsForValue().set("order:" + user.getId() + ":" +
+                        goodsVo.getId(),
                 seckillOrder);
 
         return order;
+    }
+
+
+    /**
+     * 生成秒杀路径/值（唯一）
+     *
+     * @param user    用户对象
+     * @param goodsId 对应秒杀商品ID
+     * @return String 返回唯一路径
+     * 同时将生成的路径，存入到 Redis 当中，同时设计以一个失效时间 60s,该时间内没访问，就失效
+     */
+    @Override
+    public String createPath(User user, Long goodsId) {
+        // 生成秒杀路径/值唯一
+        String path = MD5Util.md5(UUIDUtil.uuid());
+        // 将随机生成的路径保存到 Redis，同时设置一个超时时间 60s，
+        // 60s 不访问，这个秒杀路径就失效
+        // Redis 当中 key 的设计: seckillPath:userId:goodsId
+        redisTemplate.opsForValue().set("seckillPath:"
+                + user.getId() + ":" + goodsId, path, 60, TimeUnit.SECONDS);
+        return path;
+    }
+
+
+    /**
+     * 对秒杀路径进行校验
+     *
+     * @param user    用户对象
+     * @param goodsId 对应秒杀商品ID
+     * @param path    校验的秒杀路径
+     * @return boolean 秒杀路径正确，返回 true ，否则返回 false
+     */
+    @Override
+    public boolean checkPath(User user, Long goodsId, String path) {
+        if (user == null || goodsId < 0 || !StringUtils.hasText(path)) {
+            return false;
+        }
+
+        // 从 Redis 当中获取该用户秒杀该商品的路径
+        String redisPath = (String) redisTemplate.opsForValue().get("seckillPath:"
+                + user.getId() + ":" + goodsId);
+        // 判断这两个路径是否相同，相同说明正确，不相同说明错误
+        return path.equals(redisPath);
+    }
+
+
+    /**
+     * 验证用户输入的验证码是否正确
+     *
+     * @param user    用户信息对象
+     * @param goodsId 秒杀商品ID
+     * @param captcha 需要验证的验证码
+     * @return boolean 通过返回 true，验证失败返回 false
+     */
+    @Override
+    public boolean checkCaptcha(User user, Long goodsId, String captcha) {
+
+        if (user == null || goodsId < 0 || !StringUtils.hasText(captcha)) {
+            return false;
+        }
+
+        // 从 Redis 取出验证码,注意:怎么存的key，就怎么取
+        String redisCaptcha = (String) redisTemplate.opsForValue().get("captcha:" + user.getId() + ":" + goodsId);
+
+
+        return captcha.equals(redisCaptcha);
     }
 }
 

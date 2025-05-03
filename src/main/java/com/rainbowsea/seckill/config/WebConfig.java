@@ -24,6 +24,16 @@ public class WebConfig implements WebMvcConfigurer {
     private UserArgumentResolver userArgumentResolver;
 
 
+    // 装配自己编写的自定义拦截器
+    @Resource
+    private AccessLimitInterceptor accessLimitInterceptor;
+
+    // 将自定义的拦截器装配进去才有效果
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(accessLimitInterceptor);
+    }
+
     //静态资源加载
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -36,4 +46,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userArgumentResolver);
     }
+
+
 }

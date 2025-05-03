@@ -27,7 +27,7 @@ spring:
       connection-test-query: select 1
     #  配置Redis
   redis:
-    host: 192.168.76.168
+    host: 192.168.76.172
     port: 6379
     password: rainbowsea
     database: 0
@@ -42,23 +42,9 @@ spring:
         max-idle: 200
         #最小空闲连接，默认0
         min-idle: 5
-
-#mybatis-plus配置
-mybatis-plus:
-  #配置mapper.xml映射文件
-  mapper-locations: classpath*:/mapper/*Mapper.xml
-  #配置mybatis数据返回类型别名
-  type-aliases-package: com.rainbowsea.seckill.pojo
-#mybatis sql 打印
-#logging:
-#  level:
-#    com.rainbowsea.seckill.mapper: debug
-server:
-  port: 8080
-
+  # rabbimq 配置
   rabbitmq:
-    #rabbitmq的ip
-    host: 192.168.76.156
+    host: 192.168.76.171
     username: admin
     password: 123
     #虚拟主机
@@ -91,3 +77,15 @@ server:
         #比如配置是2 ：第1次等 1s, 第2次等 2s,第3次等 4s..
         #比如配置是1 ：第1次等 1s, 第2次等 1s,第3次等 1s..
         multiplier: 1
+#mybatis-plus配置
+mybatis-plus:
+  #配置mapper.xml映射文件
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  #配置mybatis数据返回类型别名
+  type-aliases-package: com.rainbowsea.seckill.pojo
+#mybatis sql 打印
+#logging:
+#  level:
+#    com.rainbowsea.seckill.mapper: debug
+server:
+  port: 8080

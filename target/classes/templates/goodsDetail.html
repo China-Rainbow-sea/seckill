@@ -161,16 +161,16 @@
                     <span th:if="${secKillStatus eq 2}">秒杀已结束</span>
                 </td>
                 <td>
-                    <form id="secKillForm" method="post" action="/seckill/doSeckill">
-                        <input type="hidden" id="goodsId" name="goodsId" th:value="${goods.id}">
-                        <button class="btn btn-primary btn-block" type="submit" id="buyButton">抢购</button>
-                    </form>
+<!--                    <form id="secKillForm" method="post" action="/seckill/doSeckill">-->
+<!--                        <input type="hidden" id="goodsId" name="goodsId" th:value="${goods.id}">-->
+<!--                        <button class="btn btn-primary btn-block" type="submit" id="buyButton">抢购</button>-->
+<!--                    </form>-->
 
                     <!-- 对应秒杀v6.0后台 隐藏秒杀接口-->
-<!--                    <input type="hidden" id="goodsId" name="goodsId" th:value="${goods.id}">-->
-<!--                    <button class="btn btn-primary btn-block" type="submit" onclick="getSecKillPath()" id="buyButton">-->
-<!--                        立即秒杀-->
-<!--                    </button>-->
+                    <input type="hidden" id="goodsId" name="goodsId" th:value="${goods.id}">
+                    <button class="btn btn-primary btn-block" type="submit" onclick="getSecKillPath()" id="buyButton">
+                        立即秒杀
+                    </button>
                 </td>
             </tr>
 
